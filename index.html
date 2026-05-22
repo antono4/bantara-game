@@ -32,29 +32,58 @@
             overflow: hidden;
         }
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        .ui-overlay {
+        #gameContainer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            pointer-events: none;
         }
 
-        .ui-button {
-            pointer-events: all;
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .menu-screen {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><rect fill="url(%23grad)" width="100%25" height="100%25"/><defs><linearGradient id="grad"><stop offset="0%25" style="stop-color:rgb(212,165,252);stop-opacity:1" /><stop offset="100%25" style="stop-color:rgb(253,191,105);stop-opacity:1" /></linearGradient></defs></svg>');
+            background-size: cover;
+        }
+
+        .content-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
             padding: 15px 40px;
-            margin: 10px;
             border: none;
             border-radius: 25px;
             font-size: 18px;
@@ -63,41 +92,48 @@
             transition: transform 0.2s, box-shadow 0.2s;
             text-transform: uppercase;
             letter-spacing: 1px;
+            min-width: 200px;
         }
 
-        .ui-button:hover {
+        button:hover {
             transform: scale(1.05);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .ui-button:active {
+        button:active {
             transform: scale(0.98);
         }
 
-        .btn-start {
+        .btn-orange {
             background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
             color: white;
-            min-width: 200px;
         }
 
-        .btn-continue {
+        .btn-green {
             background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
             color: white;
-            min-width: 180px;
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+        }
+
+        .btn-red {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
         }
 
         .btn-back {
-            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-            color: white;
             position: absolute;
             top: 20px;
             left: 20px;
             padding: 10px 25px;
             font-size: 16px;
-            border-radius: 50px;
+            min-width: auto;
         }
 
-        .stats-display {
+        .stats {
             position: absolute;
             top: 20px;
             right: 20px;
@@ -119,518 +155,220 @@
             vertical-align: middle;
         }
 
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .back-nav {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .game-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
         @media (max-width: 768px) {
-            .ui-button {
+            button {
                 padding: 12px 30px;
                 font-size: 16px;
+                min-width: 150px;
             }
 
-            .stats-display {
-                font-size: 14px;
-                padding: 10px 15px;
+            .content-box {
+                padding: 30px 20px;
+                max-width: 90%;
+            }
+
+            h1 {
+                font-size: 24px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <canvas id="gameCanvas"></canvas>
-        <div class="ui-overlay" id="uiOverlay"></div>
+        <div id="gameContainer">
+            <!-- Menu Screen -->
+            <div id="menuScreen" class="screen active">
+                <div class="image-container">
+                    <img id="menuImage" class="game-image" src="" alt="Menu">
+                    <div class="overlay">
+                        <div class="button-group" style="margin-top: 200px;">
+                            <button class="btn-orange" onclick="goToGame()">MULAI</button>
+                            <button class="btn-green" onclick="goToInstructions()">PETUNJUK</button>
+                            <button class="btn-red" onclick="goToProfile()">PROFIL PENGEMBANG</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Screen -->
+            <div id="gameScreen" class="screen">
+                <div class="image-container">
+                    <img id="gameImage" class="game-image" src="" alt="Game">
+                    <div class="stats">
+                        <span class="coin-icon"></span>Coins: <span id="coinCount">150</span>
+                    </div>
+                    <div class="overlay">
+                        <div class="button-group">
+                            <button class="btn-green" onclick="startAdventure()">Mulai Petualangan</button>
+                            <button class="btn-blue" onclick="goToMenu()">Kembali ke Menu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instructions Screen -->
+            <div id="instructionsScreen" class="screen">
+                <div class="image-container">
+                    <img id="instructionsImage" class="game-image" src="" alt="Instructions">
+                    <div class="overlay">
+                        <div class="back-nav">
+                            <button class="btn-blue btn-back" onclick="goToMenu()">← KEMBALI</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Screen -->
+            <div id="profileScreen" class="screen">
+                <div class="image-container">
+                    <img id="profileImage" class="game-image" src="" alt="Profile">
+                    <div class="overlay">
+                        <div class="back-nav">
+                            <button class="btn-blue btn-back" onclick="goToMenu()">← KEMBALI</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Urgency Screen -->
+            <div id="urgencyScreen" class="screen">
+                <div class="image-container">
+                    <img id="urgencyImage" class="game-image" src="" alt="Urgency">
+                    <div class="overlay">
+                        <div class="button-group" style="margin-top: 150px;">
+                            <button class="btn-green" onclick="startGame()">MULAI PETUALANGAN</button>
+                            <button class="btn-blue" onclick="goToGame()">Kembali</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Game Constants
-        const GAME_STATES = {
-            MENU: 'menu',
-            INSTRUCTIONS: 'instructions',
-            PROFILE: 'profile',
-            PLAYING: 'playing',
-            URGENCY: 'urgency'
+        // Game images - These are the URLs from your uploaded images
+        // You'll need to replace these with the actual URLs of your images
+        const gameImages = {
+            menu: 'https://github.com/gedelumbung/bantara-game/raw/main/assets/menu.jpg', // Image 1
+            instructions: 'https://github.com/gedelumbung/bantara-game/raw/main/assets/instructions.jpg', // Image 3
+            profile: 'https://github.com/gedelumbung/bantara-game/raw/main/assets/profile.jpg', // Image 3
+            game: 'https://github.com/gedelumbung/bantara-game/raw/main/assets/game.jpg', // Image 2
+            urgency: 'https://github.com/gedelumbung/bantara-game/raw/main/assets/urgency.jpg' // Image 4
         };
 
-        const COLORS = {
-            SKY_TOP: '#d4a5fc',
-            SKY_BOTTOM: '#fdbf69',
-            CLOUD: '#fffacd',
-            TEMPLE_MAIN: '#b8620b',
-            TEMPLE_ROOF: '#8b4513',
-            GRASS: '#7cb342',
-            PALM_TRUNK: '#8b6914',
-            PALM_LEAF: '#558b2f',
-            BUTTON_ORANGE: '#fbbf24',
-            BUTTON_GREEN: '#4ade80',
-            BUTTON_RED: '#ef4444',
-            TEXT_DARK: '#333333',
-            TEXT_LIGHT: '#ffffff'
-        };
-
-        // Game State
-        let gameState = GAME_STATES.MENU;
         let playerCoins = 150;
         let playerLevel = 1;
 
-        // Canvas Setup
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const overlay = document.getElementById('uiOverlay');
-
-        function resizeCanvas() {
-            const rect = canvas.parentElement.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.height;
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        // Drawing Functions
-        function drawSky() {
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, COLORS.SKY_TOP);
-            gradient.addColorStop(1, COLORS.SKY_BOTTOM);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-
-        function drawClouds() {
-            ctx.fillStyle = COLORS.CLOUD;
-            ctx.globalAlpha = 0.7;
-
-            // Cloud 1
-            ctx.beginPath();
-            ctx.ellipse(100, 80, 60, 35, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(140, 75, 50, 30, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Cloud 2
-            ctx.beginPath();
-            ctx.ellipse(canvas.width - 120, 120, 70, 40, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(canvas.width - 50, 110, 60, 35, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Cloud 3
-            ctx.beginPath();
-            ctx.ellipse(canvas.width / 2, 60, 65, 38, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.globalAlpha = 1;
-        }
-
-        function drawTemple() {
-            const templeX = canvas.width / 2;
-            const templeY = canvas.height / 2 - 100;
-            const templeWidth = 200;
-            const templeHeight = 250;
-
-            // Main body
-            ctx.fillStyle = COLORS.TEMPLE_MAIN;
-            ctx.fillRect(templeX - templeWidth / 2, templeY, templeWidth, templeHeight);
-
-            // Roof layers
-            ctx.fillStyle = COLORS.TEMPLE_ROOF;
-            for (let i = 0; i < 4; i++) {
-                const layerWidth = templeWidth - i * 30;
-                const layerX = templeX - layerWidth / 2;
-                const layerY = templeY - (i + 1) * 25;
-                
-                // Roof
-                ctx.fillRect(layerX, layerY, layerWidth, 20);
-                
-                // Decorative peaks
-                ctx.fillStyle = '#d4890a';
-                ctx.beginPath();
-                ctx.moveTo(layerX + layerWidth / 2 - 15, layerY - 10);
-                ctx.lineTo(layerX + layerWidth / 2, layerY - 20);
-                ctx.lineTo(layerX + layerWidth / 2 + 15, layerY - 10);
-                ctx.fill();
-                
-                ctx.fillStyle = COLORS.TEMPLE_ROOF;
-            }
-
-            // Doors and windows
-            ctx.fillStyle = '#654321';
-            ctx.fillRect(templeX - 40, templeY + 60, 30, 50);
-            ctx.fillRect(templeX + 10, templeY + 60, 30, 50);
-
-            // Door details
-            ctx.strokeStyle = '#8b4513';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(templeX - 40, templeY + 60, 30, 50);
-            ctx.strokeRect(templeX + 10, templeY + 60, 30, 50);
-        }
-
-        function drawPalmTree(x, y) {
-            // Trunk
-            ctx.fillStyle = COLORS.PALM_TRUNK;
-            ctx.beginPath();
-            ctx.ellipse(x, y, 15, 40, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Leaves
-            ctx.fillStyle = COLORS.PALM_LEAF;
-            for (let i = 0; i < 6; i++) {
-                const angle = (i / 6) * Math.PI * 2;
-                const leafX = x + Math.cos(angle) * 50;
-                const leafY = y - 50 + Math.sin(angle) * 30;
-                
-                ctx.beginPath();
-                ctx.ellipse(leafX, leafY, 25, 12, angle, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function drawCharacter(x, y, gender = 'male') {
-            const headRadius = 20;
-            
-            // Head
-            ctx.fillStyle = '#f4a460';
-            ctx.beginPath();
-            ctx.arc(x, y - 30, headRadius, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Eyes
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            ctx.arc(x - 8, y - 35, 3, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(x + 8, y - 35, 3, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Smile
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(x, y - 28, 8, 0, Math.PI);
-            ctx.stroke();
-
-            // Body (traditional white clothing)
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(x - 18, y - 10, 36, 40);
-
-            // Traditional sash (if male)
-            if (gender === 'male') {
-                ctx.fillStyle = '#e53935';
-                ctx.fillRect(x - 18, y + 15, 36, 12);
-            }
-
-            // Arms
-            ctx.fillStyle = '#f4a460';
-            ctx.fillRect(x - 25, y - 5, 8, 30);
-            ctx.fillRect(x + 17, y - 5, 8, 30);
-
-            // Legs
-            ctx.fillRect(x - 10, y + 30, 7, 25);
-            ctx.fillRect(x + 3, y + 30, 7, 25);
-        }
-
-        function drawGrass() {
-            ctx.fillStyle = COLORS.GRASS;
-            ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
-
-            // Grass texture lines
-            ctx.strokeStyle = '#558b2f';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < canvas.width; i += 30) {
-                ctx.beginPath();
-                ctx.moveTo(i, canvas.height - 80);
-                ctx.lineTo(i + 15, canvas.height);
-                ctx.stroke();
-            }
-        }
-
-        function drawGameBackground() {
-            drawSky();
-            drawClouds();
-            drawGrass();
-            drawPalmTree(80, canvas.height - 100);
-            drawPalmTree(canvas.width - 80, canvas.height - 100);
-            drawTemple();
-        }
-
-        function drawText(text, x, y, fontSize = 24, color = COLORS.TEXT_DARK, align = 'center') {
-            ctx.fillStyle = color;
-            ctx.font = `${fontSize}px Arial, sans-serif`;
-            ctx.textAlign = align;
-            ctx.textBaseline = 'middle';
-            ctx.fillText(text, x, y);
-        }
-
-        function drawButton(x, y, width, height, text, bgColor, textColor = COLORS.TEXT_LIGHT) {
-            ctx.fillStyle = bgColor;
-            ctx.beginPath();
-            ctx.roundRect(x - width / 2, y - height / 2, width, height, 20);
-            ctx.fill();
-
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            drawText(text, x, y, 18, textColor, 'center');
-        }
-
-        function createUIButton(text, x, y, width, onClick, className = 'ui-button btn-start') {
-            const btn = document.createElement('button');
-            btn.className = className;
-            btn.textContent = text;
-            btn.style.position = 'absolute';
-            btn.style.left = x + 'px';
-            btn.style.top = y + 'px';
-            btn.style.transform = 'translate(-50%, -50%)';
-            btn.onclick = onClick;
-            overlay.appendChild(btn);
-            return btn;
-        }
-
-        function clearUI() {
-            overlay.innerHTML = '';
-        }
-
-        // Game Screens
-        function showMenuScreen() {
-            clearUI();
-            drawGameBackground();
-            drawCharacter(150, canvas.height - 120, 'female');
-            drawCharacter(canvas.width - 150, canvas.height - 120, 'male');
-
-            // Title
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-            ctx.fillRect(canvas.width / 2 - 200, 50, 400, 120);
-            
-            drawText('BANTARA', canvas.width / 2, 90, 48, '#c41e3a', 'center');
-            drawText('Banten Tatauan Upakara', canvas.width / 2, 135, 20, '#8b4513', 'center');
-
-            createUIButton('MULAI', canvas.width / 2, canvas.height / 2, 200, () => {
-                gameState = GAME_STATES.PLAYING;
-                showGameScreen();
-            }, 'ui-button btn-start');
-
-            createUIButton('PETUNJUK', canvas.width / 2, canvas.height / 2 + 70, 180, () => {
-                gameState = GAME_STATES.INSTRUCTIONS;
-                showInstructionsScreen();
-            }, 'ui-button btn-continue');
-
-            createUIButton('PROFIL', canvas.width / 2, canvas.height / 2 + 140, 180, () => {
-                gameState = GAME_STATES.PROFILE;
-                showProfileScreen();
-            }, 'ui-button btn-continue');
-        }
-
-        function showGameScreen() {
-            clearUI();
-            drawGameBackground();
-
-            // Characters
-            drawCharacter(120, canvas.height - 120, 'female');
-            drawCharacter(canvas.width - 120, canvas.height - 120, 'male');
-
-            // Info panels
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.beginPath();
-            ctx.roundRect(canvas.width / 2 - 250, 40, 500, 100, 15);
-            ctx.fill();
-
-            drawText('Misi Utama:', canvas.width / 2 - 220, 65, 16, COLORS.TEXT_DARK, 'left');
-            drawText('Pelajari Upakara Banten dan kumpulkan koin!', canvas.width / 2 - 220, 95, 14, COLORS.TEXT_DARK, 'left');
-
-            // Stats
-            const statsHTML = `<div class="stats-display"><span class="coin-icon"></span> Coins: ${playerCoins}</div>`;
-            if (!overlay.querySelector('.stats-display')) {
-                overlay.insertAdjacentHTML('beforeend', statsHTML);
-            }
-
-            // Start button
-            createUIButton('Mulai Petualangan', canvas.width / 2, canvas.height - 40, 200, () => {
-                gameState = GAME_STATES.URGENCY;
-                showUrgencyScreen();
-            }, 'ui-button btn-continue');
-
-            createUIButton('Kembali', 50, 40, 120, () => {
-                gameState = GAME_STATES.MENU;
-                showMenuScreen();
-            }, 'ui-button btn-back');
-        }
-
-        function showUrgencyScreen() {
-            clearUI();
-            drawGameBackground();
-            drawCharacter(120, canvas.height - 120, 'male');
-
-            // Large content area
-            ctx.fillStyle = 'rgba(255, 165, 0, 0.95)';
-            ctx.beginPath();
-            ctx.roundRect(canvas.width / 2 - 280, 60, 560, 300, 20);
-            ctx.fill();
-
-            drawText('URGENSI DARI GAME', canvas.width / 2, 100, 28, COLORS.TEXT_LIGHT, 'center');
-            
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-            ctx.fillRect(canvas.width / 2 - 250, 130, 500, 2);
-
-            drawText('Kumpulkan koin untuk upgrade kemampuanmu!', canvas.width / 2, 170, 16, COLORS.TEXT_LIGHT, 'center');
-            drawText('Pelajari tentang Upakara Banten yang sakral', canvas.width / 2, 200, 16, COLORS.TEXT_LIGHT, 'center');
-            drawText('Tingkatkan level dan buka fitur baru', canvas.width / 2, 230, 16, COLORS.TEXT_LIGHT, 'center');
-
-            // Coin reward
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-            ctx.beginPath();
-            ctx.arc(canvas.width / 2, 300, 40, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.fillStyle = '#fbbf24';
-            ctx.beginPath();
-            ctx.arc(canvas.width / 2, 300, 35, 0, Math.PI * 2);
-            ctx.fill();
-
-            drawText('+50', canvas.width / 2, 305, 24, COLORS.TEXT_DARK, 'center');
-
-            createUIButton('Mulai Permainan', canvas.width / 2, canvas.height - 50, 200, () => {
-                playerCoins += 50;
-                gameState = GAME_STATES.PLAYING;
-                showGameScreen();
-            }, 'ui-button btn-continue');
-
-            createUIButton('Kembali', 50, 40, 120, () => {
-                gameState = GAME_STATES.PLAYING;
-                showGameScreen();
-            }, 'ui-button btn-back');
-        }
-
-        function showInstructionsScreen() {
-            clearUI();
-            drawGameBackground();
-            drawCharacter(canvas.width - 150, canvas.height - 120, 'female');
-
-            // Content box
-            ctx.fillStyle = 'rgba(139, 69, 19, 0.95)';
-            ctx.beginPath();
-            ctx.roundRect(canvas.width / 2 - 280, 30, 560, 350, 20);
-            ctx.fill();
-
-            ctx.strokeStyle = '#d4a373';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // Title
-            drawText('PETUNJUK PERMAINAN', canvas.width / 2, 60, 20, COLORS.TEXT_LIGHT, 'center');
-
-            // Instructions
-            const instructions = [
-                '1. Misi Utama: Pelajari Upakara Banten tradisional',
-                '2. Kendali Utama: Gunakan tombol untuk berinteraksi',
-                '3. Dapatkan Koin untuk upgrade:',
-                '   • Ceper/Tamas (bahan dasar)',
-                '   • Geser & Lepas (bahan lanjutan)',
-                '   • Pastikan Posisi (upgrade posisi)',
-                '4. Tingkatkan level dengan mengumpulkan koin'
-            ];
-
-            let y = 100;
-            instructions.forEach(line => {
-                drawText(line, canvas.width / 2 - 250, y, 13, COLORS.TEXT_LIGHT, 'left');
-                y += 30;
+        // Screen Navigation Functions
+        function hideAllScreens() {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
             });
-
-            createUIButton('Kembali', 50, 40, 120, () => {
-                gameState = GAME_STATES.MENU;
-                showMenuScreen();
-            }, 'ui-button btn-back');
         }
 
-        function showProfileScreen() {
-            clearUI();
-            drawGameBackground();
-            drawCharacter(150, canvas.height - 120, 'male');
-            drawCharacter(canvas.width - 150, canvas.height - 120, 'female');
-
-            // Content box
-            ctx.fillStyle = 'rgba(139, 69, 19, 0.95)';
-            ctx.beginPath();
-            ctx.roundRect(canvas.width / 2 - 280, 30, 560, 350, 20);
-            ctx.fill();
-
-            ctx.strokeStyle = '#d4a373';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // Title
-            drawText('PROFIL PENGEMBANG', canvas.width / 2, 60, 20, COLORS.TEXT_LIGHT, 'center');
-
-            const profile = [
-                'Bantara Banten Tatauan Upakara',
-                'Permainan Edukatif tentang Budaya Bali',
-                '',
-                'Fitur Utama:',
-                '• Pembelajaran Interaktif tentang Upakara',
-                '• Sistem Koin dan Upgrade',
-                '• Karakter Balinese yang Autentik',
-                '• Latar Belakang Budaya yang Kaya',
-                '',
-                'Dikembangkan dengan HTML5 Canvas',
-                'Versi: Prototype 1.0'
-            ];
-
-            let y = 100;
-            profile.forEach(line => {
-                const size = line === '' ? 8 : 13;
-                drawText(line, canvas.width / 2 - 250, y, size, COLORS.TEXT_LIGHT, 'left');
-                y += 25;
-            });
-
-            createUIButton('Kembali', 50, 40, 120, () => {
-                gameState = GAME_STATES.MENU;
-                showMenuScreen();
-            }, 'ui-button btn-back');
-        }
-
-        // Polyfill for roundRect
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-                if (w < 2 * r) r = w / 2;
-                if (h < 2 * r) r = h / 2;
-                this.beginPath();
-                this.moveTo(x + r, y);
-                this.arcTo(x + w, y, x + w, y + h, r);
-                this.arcTo(x + w, y + h, x, y + h, r);
-                this.arcTo(x, y + h, x, y, r);
-                this.arcTo(x, y, x + w, y, r);
-                this.closePath();
-            };
-        }
-
-        // Main Game Loop
-        function gameLoop() {
-            switch (gameState) {
-                case GAME_STATES.MENU:
-                    showMenuScreen();
-                    break;
-                case GAME_STATES.INSTRUCTIONS:
-                    showInstructionsScreen();
-                    break;
-                case GAME_STATES.PROFILE:
-                    showProfileScreen();
-                    break;
-                case GAME_STATES.PLAYING:
-                    showGameScreen();
-                    break;
-                case GAME_STATES.URGENCY:
-                    showUrgencyScreen();
-                    break;
+        function showScreen(screenId, imageSrc) {
+            hideAllScreens();
+            const screen = document.getElementById(screenId);
+            screen.classList.add('active');
+            
+            // Load the appropriate image
+            if (screenId === 'menuScreen') {
+                document.getElementById('menuImage').src = gameImages.menu;
+            } else if (screenId === 'gameScreen') {
+                document.getElementById('gameImage').src = gameImages.game;
+            } else if (screenId === 'instructionsScreen') {
+                document.getElementById('instructionsImage').src = gameImages.instructions;
+            } else if (screenId === 'profileScreen') {
+                document.getElementById('profileImage').src = gameImages.profile;
+            } else if (screenId === 'urgencyScreen') {
+                document.getElementById('urgencyImage').src = gameImages.urgency;
             }
         }
 
-        // Responsive handling
-        window.addEventListener('orientationchange', () => {
-            resizeCanvas();
-            gameLoop();
+        function goToMenu() {
+            showScreen('menuScreen');
+        }
+
+        function goToGame() {
+            showScreen('gameScreen', gameImages.game);
+        }
+
+        function goToInstructions() {
+            showScreen('instructionsScreen', gameImages.instructions);
+        }
+
+        function goToProfile() {
+            showScreen('profileScreen', gameImages.profile);
+        }
+
+        function startAdventure() {
+            showScreen('urgencyScreen', gameImages.urgency);
+        }
+
+        function startGame() {
+            playerCoins += 50;
+            document.getElementById('coinCount').textContent = playerCoins;
+            
+            // Here you can add actual game mechanics
+            alert(`Game Started! You now have ${playerCoins} coins!`);
+            
+            goToGame();
+        }
+
+        // Initialize - Show menu screen
+        window.addEventListener('load', () => {
+            goToMenu();
         });
 
-        // Start the game
-        gameLoop();
+        // Handle responsive resizing
+        window.addEventListener('resize', () => {
+            // Game will automatically scale with CSS
+        });
     </script>
 </body>
 </html>
