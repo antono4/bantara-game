@@ -66,6 +66,20 @@
             background-size: cover;
         }
 
+        .profile-screen {
+            background: linear-gradient(160deg, #d4a5fc 0%, #fdbf69 100%);
+        }
+
+        .profile-screen .content-box a {
+            color: #d97706;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .profile-screen .content-box a:hover {
+            text-decoration: underline;
+        }
+
         .content-box {
             background: rgba(255, 255, 255, 0.95);
             padding: 40px;
@@ -224,7 +238,7 @@
             <!-- Menu Screen -->
             <div id="menuScreen" class="screen active">
                 <div class="image-container">
-                    <img id="menuImage" class="game-image" src="" alt="Menu">
+                    <img id="menuImage" class="game-image" src="assets/1.png" alt="Menu">
                     <div class="overlay">
                         <div class="button-group" style="margin-top: 200px;">
                             <button class="btn-orange" onclick="goToGame()">MULAI</button>
@@ -238,7 +252,7 @@
             <!-- Game Screen -->
             <div id="gameScreen" class="screen">
                 <div class="image-container">
-                    <img id="gameImage" class="game-image" src="" alt="Game">
+                    <img id="gameImage" class="game-image" alt="Game">
                     <div class="stats">
                         <span class="coin-icon"></span>Coins: <span id="coinCount">150</span>
                     </div>
@@ -254,7 +268,7 @@
             <!-- Instructions Screen -->
             <div id="instructionsScreen" class="screen">
                 <div class="image-container">
-                    <img id="instructionsImage" class="game-image" src="" alt="Instructions">
+                    <img id="instructionsImage" class="game-image" alt="Instructions">
                     <div class="overlay">
                         <div class="back-nav">
                             <button class="btn-blue btn-back" onclick="goToMenu()">← KEMBALI</button>
@@ -264,21 +278,25 @@
             </div>
 
             <!-- Profile Screen -->
-            <div id="profileScreen" class="screen">
-                <div class="image-container">
-                    <img id="profileImage" class="game-image" src="" alt="Profile">
-                    <div class="overlay">
-                        <div class="back-nav">
-                            <button class="btn-blue btn-back" onclick="goToMenu()">← KEMBALI</button>
-                        </div>
-                    </div>
+            <div id="profileScreen" class="screen profile-screen">
+                <div class="back-nav">
+                    <button class="btn-blue btn-back" onclick="goToMenu()">← KEMBALI</button>
+                </div>
+                <div class="content-box">
+                    <h1>Profil Pengembang</h1>
+                    <p><strong>Antono</strong></p>
+                    <p>Full-Stack Developer | AI Enthusiast</p>
+                    <p>West Java, Indonesia</p>
+                    <p>Pengembang game edukasi "Bantara: Banten Tatauan Upakara" — media belajar
+                        interaktif untuk mengenal dan melestarikan tradisi banten di Bali.</p>
+                    <p><a href="https://github.com/antono4" target="_blank" rel="noopener">github.com/antono4</a></p>
                 </div>
             </div>
 
             <!-- Urgency Screen -->
             <div id="urgencyScreen" class="screen">
                 <div class="image-container">
-                    <img id="urgencyImage" class="game-image" src="" alt="Urgency">
+                    <img id="urgencyImage" class="game-image" alt="Urgency">
                     <div class="overlay">
                         <div class="button-group" style="margin-top: 150px;">
                             <button class="btn-green" onclick="startGame()">MULAI PETUALANGAN</button>
@@ -291,14 +309,12 @@
     </div>
 
     <script>
-        // Game images - These are the URLs from your uploaded images
-        // You'll need to replace these with the actual URLs of your images
+        // Game images served locally from the assets folder
         const gameImages = {
-            menu: 'https://github.com/gedelumbung/bantara-game/raw/main/assets/menu.jpg', // Image 1
-            instructions: 'https://github.com/gedelumbung/bantara-game/raw/main/assets/instructions.jpg', // Image 3
-            profile: 'https://github.com/gedelumbung/bantara-game/raw/main/assets/profile.jpg', // Image 3
-            game: 'https://github.com/gedelumbung/bantara-game/raw/main/assets/game.jpg', // Image 2
-            urgency: 'https://github.com/gedelumbung/bantara-game/raw/main/assets/urgency.jpg' // Image 4
+            menu: 'assets/1.png',
+            game: 'assets/2.png',
+            instructions: 'assets/3.png',
+            urgency: 'assets/4.png'
         };
 
         let playerCoins = 150;
@@ -311,11 +327,11 @@
             });
         }
 
-        function showScreen(screenId, imageSrc) {
+        function showScreen(screenId) {
             hideAllScreens();
             const screen = document.getElementById(screenId);
             screen.classList.add('active');
-            
+
             // Load the appropriate image
             if (screenId === 'menuScreen') {
                 document.getElementById('menuImage').src = gameImages.menu;
@@ -323,8 +339,6 @@
                 document.getElementById('gameImage').src = gameImages.game;
             } else if (screenId === 'instructionsScreen') {
                 document.getElementById('instructionsImage').src = gameImages.instructions;
-            } else if (screenId === 'profileScreen') {
-                document.getElementById('profileImage').src = gameImages.profile;
             } else if (screenId === 'urgencyScreen') {
                 document.getElementById('urgencyImage').src = gameImages.urgency;
             }
@@ -335,19 +349,19 @@
         }
 
         function goToGame() {
-            showScreen('gameScreen', gameImages.game);
+            showScreen('gameScreen');
         }
 
         function goToInstructions() {
-            showScreen('instructionsScreen', gameImages.instructions);
+            showScreen('instructionsScreen');
         }
 
         function goToProfile() {
-            showScreen('profileScreen', gameImages.profile);
+            showScreen('profileScreen');
         }
 
         function startAdventure() {
-            showScreen('urgencyScreen', gameImages.urgency);
+            showScreen('urgencyScreen');
         }
 
         function startGame() {
