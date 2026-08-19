@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bantara Banten Tatauan Upakara - Game</title>
+    <link rel="preload" as="image" href="assets/1.png">
+    <link rel="preload" as="image" href="assets/2.png">
+    <link rel="preload" as="image" href="assets/3.png">
+    <link rel="preload" as="image" href="assets/4.png">
     <style>
         * {
             margin: 0;
@@ -254,10 +258,546 @@
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
         }
 
+        /* ===== Layar Permainan: Susun Banten ===== */
+        .play-screen {
+            background: linear-gradient(160deg, #d4a5fc 0%, #fdbf69 100%);
+        }
+
+        .play-hud {
+            position: absolute;
+            top: 2.5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 56%;
+            z-index: 5;
+            text-align: center;
+        }
+
+        .timer-wrap {
+            position: relative;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 999px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #timerBar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            transition: width 1s linear;
+        }
+
+        #timerBar.low {
+            background: linear-gradient(90deg, #f87171, #ef4444);
+        }
+
+        #timerText {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .mission {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 7px 18px;
+            background: rgba(0, 0, 0, 0.55);
+            color: white;
+            border-radius: 999px;
+            font-size: clamp(11px, 1.3vw, 15px);
+            font-weight: bold;
+        }
+
+        @keyframes hintFlash {
+            0% { background: #ef4444; }
+            100% { background: rgba(0, 0, 0, 0.55); }
+        }
+
+        .hint-flash {
+            animation: hintFlash 1.2s ease-out;
+        }
+
+        .guide-panel {
+            position: absolute;
+            left: 2%;
+            top: 17%;
+            width: 17%;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 14px;
+            padding: 10px 12px;
+            z-index: 5;
+            font-size: clamp(8px, 1.05vw, 12px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .guide-panel h3 {
+            margin: 0 0 6px;
+            font-size: clamp(10px, 1.3vw, 15px);
+            color: #7c3aed;
+            text-align: center;
+        }
+
+        .guide-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 5px 0;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .guide-flower {
+            flex: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            font-size: 14px;
+        }
+
+        /* Wadah (Ceper = nampan anyam datar, Tamas = baki berkaki) */
+        .wadah {
+            position: absolute;
+            left: 50%;
+            top: 19%;
+            transform: translateX(-50%);
+            width: 33%;
+            aspect-ratio: 1;
+            z-index: 4;
+        }
+
+        .wadah-base {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            border: 8px solid #854d0e;
+            border-radius: 14px;
+            background: repeating-linear-gradient(45deg, #84cc16 0 12px, #65a30d 12px 24px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .wadah.tamas .wadah-base {
+            inset: 0 0 13% 0;
+            border-radius: 50%;
+            border-color: #92400e;
+            background: repeating-radial-gradient(circle at 50% 42%, #84cc16 0 11px, #65a30d 11px 22px);
+        }
+
+        .tamas-stand {
+            display: none;
+        }
+
+        .wadah.tamas .tamas-stand {
+            display: block;
+            position: absolute;
+            left: 34%;
+            top: 82%;
+            width: 32%;
+            height: 18%;
+            background: linear-gradient(#b45309, #78350f);
+            border-radius: 6px 6px 18px 18px;
+            z-index: 0;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #wadahLayers {
+            position: absolute;
+            inset: 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .wadah.tamas #wadahLayers {
+            inset: 12px 12px 15% 12px;
+            border-radius: 50%;
+        }
+
+        .layer {
+            position: absolute;
+            inset: 0;
+        }
+
+        .layer-janur {
+            background: repeating-linear-gradient(-45deg, #4d7c0f 0 10px, #3f6212 10px 20px);
+        }
+
+        .layer-emoji {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(20px, 3.4vw, 40px);
+            letter-spacing: 4px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .layer-porosan {
+            align-items: flex-end;
+            padding-bottom: 12%;
+        }
+
+        .center-zone {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            padding: 0;
+            border: none;
+            background: transparent;
+            border-radius: 14px;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .wadah.tamas .center-zone {
+            inset: 0 0 13% 0;
+            border-radius: 50%;
+        }
+
+        .flower-slot {
+            position: absolute;
+            width: 21%;
+            aspect-ratio: 1;
+            margin-left: -10.5%;
+            margin-top: -10.5%;
+            z-index: 6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            border: 3px dashed rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.18);
+            cursor: pointer;
+            padding: 0;
+            appearance: none;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .flower-slot:hover,
+        .flower-slot:focus-visible {
+            box-shadow: 0 0 14px rgba(255, 255, 255, 0.9);
+            transform: scale(1.06);
+            outline: none;
+        }
+
+        .flower-slot.filled {
+            border-style: solid;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: default;
+        }
+
+        .slot-emoji {
+            font-size: clamp(17px, 2.5vw, 30px);
+            line-height: 1;
+        }
+
+        .dir-label {
+            font-size: clamp(7px, 0.9vw, 11px);
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+            text-transform: capitalize;
+        }
+
+        /* Kotak bahan di bagian bawah */
+        .kotak-bahan {
+            position: absolute;
+            bottom: 2%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 94%;
+            z-index: 8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 10px 12px 8px;
+            background: rgba(120, 53, 15, 0.93);
+            border: 4px solid #78350f;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .kotak-label {
+            position: absolute;
+            top: -13px;
+            left: 14px;
+            padding: 2px 12px;
+            background: #78350f;
+            color: #fde68a;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .drag-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            width: clamp(46px, 6.2vw, 62px);
+            padding: 6px 2px 4px;
+            border: 3px solid rgba(255, 255, 255, 0.55);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.95);
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .drag-item:focus-visible {
+            outline: 3px solid #fbbf24;
+            outline-offset: 1px;
+        }
+
+        .item-emoji {
+            font-size: clamp(20px, 2.6vw, 28px);
+            line-height: 1.1;
+        }
+
+        .item-label {
+            font-size: clamp(8px, 0.95vw, 11px);
+            font-weight: bold;
+            color: #555;
+        }
+
+        .drag-item.selected {
+            box-shadow: 0 0 0 3px #fbbf24, 0 0 16px rgba(251, 191, 36, 0.9);
+            transform: scale(1.1);
+        }
+
+        .drag-item.dragging {
+            position: fixed;
+            margin: 0;
+            z-index: 1000;
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(1.15);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+        }
+
+        .drag-item.placed {
+            opacity: 0.35;
+            filter: grayscale(0.8);
+            cursor: default;
+        }
+
+        .ring-putih { border-color: #d1d5db; }
+        .ring-merah { border-color: #ef4444; }
+        .ring-kuning { border-color: #eab308; }
+        .ring-biru { border-color: #3b82f6; }
+
+        .ring-tengah {
+            border-color: transparent;
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
+                conic-gradient(#ef4444, #f59e0b, #22c55e, #3b82f6, #a855f7, #ef4444) border-box;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .shake {
+            animation: shake 0.3s;
+        }
+
+        /* Tombol Pasar Yadnya di layar hub */
+        .btn-shop {
+            position: absolute;
+            left: 2%;
+            bottom: 3.5%;
+            z-index: 10;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #b45309, #78350f);
+            color: #fde68a;
+            font-size: clamp(12px, 1.3vw, 15px);
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-shop:hover,
+        .btn-shop:focus-visible {
+            transform: scale(1.06);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.8), 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Modal (pilih wadah / menang-kalah / Pasar Yadnya) */
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.55);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 86%;
+            max-width: 440px;
+            max-height: 88%;
+            overflow-y: auto;
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-box h2 {
+            margin: 0 0 10px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .btn-modal {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 999px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .btn-modal:hover { transform: scale(1.05); }
+        .btn-modal:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+        .btn-modal.green { background: linear-gradient(135deg, #4ade80, #22c55e); }
+        .btn-modal.blue { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+        .btn-modal.orange { background: linear-gradient(135deg, #fbbf24, #f97316); }
+        .btn-modal.gray { background: #9ca3af; }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            padding: 10px 12px;
+            background: #fef3c7;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .shop-item small { color: #666; }
+
+        .wadah-choice {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .wadah-option {
+            flex: 1;
+            padding: 14px 10px;
+            border: 3px solid transparent;
+            border-radius: 16px;
+            background: #f3f4f6;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .wadah-option:hover {
+            border-color: #f59e0b;
+            transform: translateY(-3px);
+        }
+
+        .wadah-option p {
+            margin: 6px 0 0;
+            font-size: 13px;
+        }
+
+        .preview-ceper {
+            width: 76px;
+            height: 60px;
+            margin: 0 auto 10px;
+            border: 6px solid #854d0e;
+            border-radius: 10px;
+            background: repeating-linear-gradient(45deg, #84cc16 0 9px, #65a30d 9px 18px);
+        }
+
+        .preview-tamas {
+            position: relative;
+            width: 76px;
+            height: 72px;
+            margin: 0 auto 10px;
+        }
+
+        .preview-tamas::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 58%;
+            border: 5px solid #92400e;
+            border-radius: 50%;
+            background: repeating-radial-gradient(circle at 50% 40%, #84cc16 0 7px, #65a30d 7px 14px);
+            box-sizing: border-box;
+        }
+
+        .preview-tamas::after {
+            content: '';
+            position: absolute;
+            left: 32%;
+            top: 56%;
+            width: 36%;
+            height: 42%;
+            background: linear-gradient(#b45309, #78350f);
+            border-radius: 4px 4px 12px 12px;
+        }
+
         @media (max-width: 768px) {
             .btn-nav {
                 padding: 8px 18px;
                 font-size: 13px;
+            }
+
+            .play-hud {
+                width: 72%;
+            }
+
+            .guide-panel {
+                width: 22%;
+                padding: 6px 8px;
             }
 
             .stats {
@@ -305,6 +845,7 @@
                     <div class="stats">
                         <span class="coin-icon"></span>Coins: <span id="coinCount">150</span>
                     </div>
+                    <button class="btn-shop" onclick="showShop()">🏪 Pasar Yadnya</button>
                     <div class="overlay">
                         <button class="hotspot hotspot-orange" onclick="goToInstructions()"
                                 style="left: 32.3%; top: 25.9%; width: 29%; height: 13%;">PETUNJUK</button>
@@ -358,6 +899,57 @@
                                 style="left: 70.3%; top: 83.9%; width: 26%; height: 10.6%;">MULAI PETUALANGAN</button>
                     </div>
                 </div>
+            </div>
+
+            <!-- Play Screen: Susun Banten -->
+            <div id="playScreen" class="screen play-screen">
+                <button class="btn-nav" onclick="quitToHub()">← KEMBALI</button>
+
+                <div class="play-hud">
+                    <div class="timer-wrap">
+                        <div id="timerBar"></div>
+                        <span id="timerText">60 dtk</span>
+                    </div>
+                    <div class="mission" id="missionText"></div>
+                </div>
+
+                <div class="guide-panel">
+                    <h3>Panca Dewata</h3>
+                    <div class="guide-item"><span class="guide-flower" style="border:2px solid #9ca3af">💮</span>Putih · Timur · Iswara</div>
+                    <div class="guide-item"><span class="guide-flower" style="border:2px solid #ef4444">🌺</span>Merah · Selatan · Brahma</div>
+                    <div class="guide-item"><span class="guide-flower" style="border:2px solid #eab308">🌻</span>Kuning · Barat · Mahadewa</div>
+                    <div class="guide-item"><span class="guide-flower" style="border:2px solid #3b82f6">🪻</span>Biru · Utara · Wisnu</div>
+                    <div class="guide-item"><span class="guide-flower ring-tengah">🌸</span>Campur · Tengah · Siwa</div>
+                </div>
+
+                <div id="wadah" class="wadah ceper">
+                    <div class="wadah-base"></div>
+                    <div class="tamas-stand"></div>
+                    <div id="wadahLayers"></div>
+                    <button type="button" class="center-zone" aria-label="Wadah banten"></button>
+                    <button type="button" class="flower-slot" data-slot="utara" style="left: 50%; top: 6%;"><span class="dir-label">Utara</span></button>
+                    <button type="button" class="flower-slot" data-slot="timur" style="left: 94%; top: 50%;"><span class="dir-label">Timur</span></button>
+                    <button type="button" class="flower-slot" data-slot="selatan" style="left: 50%; top: 94%;"><span class="dir-label">Selatan</span></button>
+                    <button type="button" class="flower-slot" data-slot="barat" style="left: 6%; top: 50%;"><span class="dir-label">Barat</span></button>
+                    <button type="button" class="flower-slot" data-slot="tengah" style="left: 50%; top: 50%;"><span class="dir-label">Tengah</span></button>
+                </div>
+
+                <div class="kotak-bahan" id="kotakBahan">
+                    <span class="kotak-label">KOTAK BAHAN</span>
+                    <button type="button" class="drag-item" data-item="janur"><span class="item-emoji">🌿</span><span class="item-label">Janur</span></button>
+                    <button type="button" class="drag-item" data-item="buah"><span class="item-emoji">🍊</span><span class="item-label">Buah</span></button>
+                    <button type="button" class="drag-item" data-item="porosan"><span class="item-emoji">🌰</span><span class="item-label">Porosan</span></button>
+                    <button type="button" class="drag-item ring-putih" data-item="bunga-putih"><span class="item-emoji">💮</span><span class="item-label">Putih</span></button>
+                    <button type="button" class="drag-item ring-merah" data-item="bunga-merah"><span class="item-emoji">🌺</span><span class="item-label">Merah</span></button>
+                    <button type="button" class="drag-item ring-kuning" data-item="bunga-kuning"><span class="item-emoji">🌻</span><span class="item-label">Kuning</span></button>
+                    <button type="button" class="drag-item ring-biru" data-item="bunga-biru"><span class="item-emoji">🪻</span><span class="item-label">Biru</span></button>
+                    <button type="button" class="drag-item ring-tengah" data-item="bunga-tengah"><span class="item-emoji">🌸</span><span class="item-label">Campur</span></button>
+                </div>
+            </div>
+
+            <!-- Modal (pilih wadah / hasil / Pasar Yadnya) -->
+            <div id="modalOverlay" class="modal-overlay">
+                <div class="modal-box" id="modalBox"></div>
             </div>
         </div>
     </div>
@@ -418,18 +1010,347 @@
             showScreen('urgencyScreen');
         }
 
-        function startGame() {
-            playerCoins += 50;
-            document.getElementById('coinCount').textContent = playerCoins;
-            
-            // Here you can add actual game mechanics
-            alert(`Petualangan dimulai! Kamu mendapat 50 Koin Bantara. Total koinmu: ${playerCoins}.`);
-            
-            goToGame();
+        // ===== Mesin Game: Susun Banten =====
+        const DEWA = {
+            utara:   { dewa: 'Wisnu',    warna: 'biru' },
+            timur:   { dewa: 'Iswara',   warna: 'putih' },
+            selatan: { dewa: 'Brahma',   warna: 'merah' },
+            barat:   { dewa: 'Mahadewa', warna: 'kuning' },
+            tengah:  { dewa: 'Siwa',     warna: 'campur' }
+        };
+
+        // Urutan bahan dasar sesuai petunjuk: janur -> buah -> porosan
+        const BASE_ITEMS = [
+            { id: 'janur',   hint: 'Letakkan JANUR sebagai alas banten' },
+            { id: 'buah',    hint: 'Letakkan BUAH di atas wadah' },
+            { id: 'porosan', hint: 'Letakkan POROSAN di atas wadah' }
+        ];
+
+        const WADAH_CONFIG = {
+            ceper: { nama: 'Ceper', waktu: 60, hadiah: 50 },
+            tamas: { nama: 'Tamas', waktu: 45, hadiah: 100 }
+        };
+
+        // Pemetaan bunga ke arah mata angin Panca Dewata
+        const FLOWER_DIRS = {
+            'bunga-putih':  'timur',
+            'bunga-merah':  'selatan',
+            'bunga-kuning': 'barat',
+            'bunga-biru':   'utara',
+            'bunga-tengah': 'tengah'
+        };
+
+        let upgrades = {};
+        try { upgrades = JSON.parse(localStorage.getItem('bantaraUpg')) || {}; } catch (e) { upgrades = {}; }
+        playerCoins = parseInt(localStorage.getItem('bantaraCoins'), 10) || 150;
+
+        let game = null;
+        let selectedItem = null;
+        let dragState = null;
+        let justDragged = false;
+
+        function saveState() {
+            localStorage.setItem('bantaraCoins', playerCoins);
+            localStorage.setItem('bantaraUpg', JSON.stringify(upgrades));
         }
+
+        function setCoins(n) {
+            playerCoins = n;
+            document.getElementById('coinCount').textContent = n;
+            saveState();
+        }
+
+        function startGame() {
+            if (upgrades.tamas) {
+                showWadahSelect();
+            } else {
+                beginGame('ceper');
+            }
+        }
+
+        function beginGame(wadah) {
+            closeModal();
+            const cfg = WADAH_CONFIG[wadah];
+            const total = cfg.waktu + (upgrades.extraTime || 0) * 15;
+            game = {
+                wadah, timeTotal: total, timeLeft: total,
+                baseIndex: 0, flowersPlaced: {}, over: false, timerId: null
+            };
+            selectedItem = null;
+
+            document.getElementById('wadah').className = 'wadah ' + wadah;
+            document.getElementById('wadahLayers').innerHTML = '';
+            document.querySelectorAll('.flower-slot').forEach(s => {
+                s.classList.remove('filled');
+                s.innerHTML = `<span class="dir-label">${s.dataset.slot}</span>`;
+            });
+            document.querySelectorAll('.drag-item').forEach(i => {
+                i.classList.remove('placed', 'selected', 'dragging');
+                i.style.left = '';
+                i.style.top = '';
+            });
+
+            document.getElementById('timerBar').classList.remove('low');
+            updateTimer();
+            updateMission();
+            showScreen('playScreen');
+
+            game.timerId = setInterval(() => {
+                game.timeLeft--;
+                updateTimer();
+                if (game.timeLeft <= 0) endGame(false);
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const bar = document.getElementById('timerBar');
+            document.getElementById('timerText').textContent = game.timeLeft + ' dtk';
+            bar.style.width = (game.timeLeft / game.timeTotal * 100) + '%';
+            bar.classList.toggle('low', game.timeLeft <= 10);
+        }
+
+        function updateMission() {
+            const m = document.getElementById('missionText');
+            if (game.baseIndex < BASE_ITEMS.length) {
+                m.textContent = BASE_ITEMS[game.baseIndex].hint;
+            } else {
+                m.textContent = 'Susun 5 bunga sesuai arah Panca Dewata!';
+            }
+        }
+
+        function tryPlace(itemId, target) {
+            if (!game || game.over) return;
+            const slotEl = target && target.closest ? target.closest('.flower-slot') : null;
+            const zoneEl = target && target.closest ? target.closest('.center-zone') : null;
+            const itemEl = document.querySelector(`.drag-item[data-item="${itemId}"]`);
+            if (!itemEl || itemEl.classList.contains('placed')) return;
+
+            if (FLOWER_DIRS[itemId]) {
+                if (!slotEl) return badMove('Letakkan bunga pada lingkaran arah di wadah!');
+                const want = FLOWER_DIRS[itemId];
+                if (slotEl.classList.contains('filled')) return badMove('Lingkaran ini sudah terisi.');
+                if (slotEl.dataset.slot !== want) {
+                    shake(slotEl);
+                    return badMove(`Salah arah! Bunga ini untuk arah ${want} (${DEWA[want].dewa}).`);
+                }
+                slotEl.classList.add('filled');
+                slotEl.innerHTML = `<span class="slot-emoji">${itemEl.querySelector('.item-emoji').textContent}</span><span class="dir-label">${want}</span>`;
+                game.flowersPlaced[want] = true;
+                markPlaced(itemEl);
+            } else {
+                if (!zoneEl) return badMove('Letakkan bahan di atas wadah!');
+                const need = BASE_ITEMS[game.baseIndex];
+                if (!need || itemId !== need.id) {
+                    shake(document.getElementById('wadahLayers'));
+                    return badMove(`Urutannya: Janur, lalu Buah, lalu Porosan. Sekarang: ${need ? need.id.toUpperCase() : 'bunga'}!`);
+                }
+                addLayer(itemId);
+                game.baseIndex++;
+                markPlaced(itemEl);
+            }
+
+            if (selectedItem === itemEl) {
+                itemEl.classList.remove('selected');
+                selectedItem = null;
+            }
+            updateMission();
+            checkWin();
+        }
+
+        function addLayer(id) {
+            const layers = document.getElementById('wadahLayers');
+            if (id === 'janur') layers.insertAdjacentHTML('beforeend', '<div class="layer layer-janur"></div>');
+            if (id === 'buah') layers.insertAdjacentHTML('beforeend', '<div class="layer layer-emoji">🍎🍊🍌</div>');
+            if (id === 'porosan') layers.insertAdjacentHTML('beforeend', '<div class="layer layer-emoji layer-porosan">🌰🥥🌰</div>');
+        }
+
+        function markPlaced(itemEl) {
+            itemEl.classList.add('placed');
+        }
+
+        function checkWin() {
+            if (game.baseIndex >= BASE_ITEMS.length && Object.keys(game.flowersPlaced).length === 5) {
+                endGame(true);
+            }
+        }
+
+        function endGame(win) {
+            if (!game || game.over) return;
+            game.over = true;
+            clearInterval(game.timerId);
+            const cfg = WADAH_CONFIG[game.wadah];
+            if (win) {
+                const bonusWaktu = Math.floor(game.timeLeft / 2);
+                const bonusCempaka = upgrades.cempaka ? 25 : 0;
+                const total = cfg.hadiah + bonusWaktu + bonusCempaka;
+                setCoins(playerCoins + total);
+                showModal(`
+                    <h2>🎉 Banten Selesai!</h2>
+                    <p>Banten ${cfg.nama} tersusun rapi sesuai tradisi. Semangat "Metanding" kembali!</p>
+                    <p>Hadiah: ${cfg.hadiah} koin<br>Bonus waktu: +${bonusWaktu} koin${bonusCempaka ? `<br>Bonus Cempaka: +${bonusCempaka} koin` : ''}</p>
+                    <p><strong>+${total} Koin Bantara</strong> · Total: ${playerCoins}</p>
+                    <div class="modal-actions">
+                        <button class="btn-modal green" onclick="beginGame('${game.wadah}')">MAIN LAGI</button>
+                        <button class="btn-modal orange" onclick="showShop()">PASAR YADNYA</button>
+                        <button class="btn-modal blue" onclick="quitToHub()">KEMBALI</button>
+                    </div>`);
+            } else {
+                showModal(`
+                    <h2>⏰ Waktu Habis!</h2>
+                    <p>Banten belum selesai tersusun. Jangan menyerah — coba lagi!</p>
+                    <div class="modal-actions">
+                        <button class="btn-modal green" onclick="beginGame('${game.wadah}')">COBA LAGI</button>
+                        <button class="btn-modal blue" onclick="quitToHub()">KEMBALI</button>
+                    </div>`);
+            }
+        }
+
+        function quitToHub() {
+            if (game && game.timerId) clearInterval(game.timerId);
+            game = null;
+            selectedItem = null;
+            closeModal();
+            document.getElementById('coinCount').textContent = playerCoins;
+            showScreen('gameScreen');
+        }
+
+        // ===== Modal =====
+        function showModal(html) {
+            document.getElementById('modalBox').innerHTML = html;
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+        }
+
+        function showWadahSelect() {
+            showModal(`
+                <h2>Pilih Wadah Banten</h2>
+                <div class="wadah-choice">
+                    <div class="wadah-option" onclick="beginGame('ceper')">
+                        <div class="preview-ceper"></div>
+                        <strong>CEPER</strong>
+                        <p>Waktu 60 dtk<br>Hadiah 50 koin</p>
+                    </div>
+                    <div class="wadah-option" onclick="beginGame('tamas')">
+                        <div class="preview-tamas"></div>
+                        <strong>TAMAS</strong>
+                        <p>Waktu 45 dtk<br>Hadiah 100 koin</p>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-modal blue" onclick="closeModal()">BATAL</button>
+                </div>`);
+        }
+
+        // ===== Pasar Yadnya =====
+        const SHOP_ITEMS = [
+            { key: 'extraTime', nama: '⏳ Waktu +15 detik', desc: 'Tambahan waktu setiap bermain (bisa ditumpuk)', harga: 100, ulang: true },
+            { key: 'cempaka',   nama: '🌼 Bunga Cempaka Langka', desc: '+25 koin setiap kemenangan', harga: 150, ulang: false },
+            { key: 'tamas',     nama: '🏺 Wadah Tamas', desc: 'Buka tantangan Tamas (hadiah 100 koin)', harga: 200, ulang: false }
+        ];
+
+        function showShop() {
+            let html = `<h2>🏪 Pasar Yadnya</h2><p>Koin kamu: <strong>${playerCoins}</strong></p>`;
+            SHOP_ITEMS.forEach(it => {
+                const owned = !it.ulang && upgrades[it.key];
+                const count = it.ulang ? (upgrades[it.key] || 0) : 0;
+                const label = owned ? 'DIMILIKI' : `BELI${count ? ` (${count}x)` : ''} · ${it.harga}`;
+                html += `
+                    <div class="shop-item">
+                        <div><strong>${it.nama}</strong><br><small>${it.desc}</small></div>
+                        <button class="btn-modal ${owned ? 'gray' : 'green'}" ${owned || playerCoins < it.harga ? 'disabled' : ''}
+                            onclick="buyItem('${it.key}', ${it.harga}, ${it.ulang})">${label}</button>
+                    </div>`;
+            });
+            html += `<div class="modal-actions"><button class="btn-modal blue" onclick="closeModal()">TUTUP</button></div>`;
+            showModal(html);
+        }
+
+        function buyItem(key, harga, ulang) {
+            if (!ulang && upgrades[key]) return;
+            if (playerCoins < harga) return;
+            setCoins(playerCoins - harga);
+            upgrades[key] = ulang ? (upgrades[key] || 0) + 1 : true;
+            saveState();
+            showShop();
+        }
+
+        // ===== Interaksi: klik-pilih lalu klik-sasaran, dan geser & lepas =====
+        function badMove(msg) {
+            const m = document.getElementById('missionText');
+            m.textContent = msg;
+            m.classList.remove('hint-flash');
+            void m.offsetWidth;
+            m.classList.add('hint-flash');
+            return false;
+        }
+
+        function shake(el) {
+            el.classList.remove('shake');
+            void el.offsetWidth;
+            el.classList.add('shake');
+        }
+
+        document.querySelectorAll('.drag-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (justDragged || !game || game.over || item.classList.contains('placed')) return;
+                if (selectedItem === item) {
+                    item.classList.remove('selected');
+                    selectedItem = null;
+                } else {
+                    document.querySelectorAll('.drag-item.selected').forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    selectedItem = item;
+                }
+            });
+
+            item.addEventListener('pointerdown', e => {
+                if (!game || game.over || item.classList.contains('placed')) return;
+                dragState = { item, x: e.clientX, y: e.clientY, moved: false };
+            });
+        });
+
+        document.querySelectorAll('.flower-slot, .center-zone').forEach(zone => {
+            zone.addEventListener('click', () => {
+                if (justDragged || !selectedItem || !game || game.over) return;
+                tryPlace(selectedItem.dataset.item, zone);
+            });
+        });
+
+        document.addEventListener('pointermove', e => {
+            if (!dragState) return;
+            if (!dragState.moved && Math.hypot(e.clientX - dragState.x, e.clientY - dragState.y) < 7) return;
+            if (!dragState.moved) {
+                dragState.moved = true;
+                dragState.item.classList.add('dragging');
+            }
+            dragState.item.style.left = e.clientX + 'px';
+            dragState.item.style.top = e.clientY + 'px';
+        });
+
+        function finishDrag(e) {
+            if (!dragState) return;
+            const { item, moved } = dragState;
+            dragState = null;
+            if (!moved) return; // ketukan biasa ditangani listener click
+            justDragged = true;
+            setTimeout(() => { justDragged = false; }, 100);
+            const el = document.elementFromPoint(e.clientX, e.clientY);
+            const zone = el && el.closest ? (el.closest('.flower-slot') || el.closest('.center-zone')) : null;
+            item.classList.remove('dragging');
+            item.style.left = '';
+            item.style.top = '';
+            if (zone) tryPlace(item.dataset.item, zone);
+        }
+
+        document.addEventListener('pointerup', finishDrag);
+        document.addEventListener('pointercancel', finishDrag);
 
         // Initialize - Show menu screen
         window.addEventListener('load', () => {
+            document.getElementById('coinCount').textContent = playerCoins;
             goToMenu();
         });
 
