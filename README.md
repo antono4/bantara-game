@@ -1,79 +1,64 @@
-# Bantara Banten Tatauan Upakara - HTML5 Game Prototype
+<!-- README ini dihasilkan otomatis oleh workflow .github/workflows/generate-readme.yml -->
+<!-- Jangan edit manual; perubahan akan ditim pada run berikutnya. -->
 
-An interactive educational game about Balinese culture, traditions, and offerings (Upakara).
+<h1 align="center">Bantara Banten Tatauan Upakara - Game 👋</h1>
 
-## Features
+<p align="center">
+  <strong>Antono</strong>
+</p>
 
-✅ Interactive menu system with multiple screens
-✅ Game canvas with Balinese temple theme
-✅ Character interaction system with NPCs
-✅ Coin collection and upgrade mechanics
-✅ Educational content integration
-✅ Responsive design for desktop and mobile
-✅ Pure HTML5, CSS3, and JavaScript (no external libraries)
-
-## Game Screens
-
-- **Main Menu**: Welcome screen with start button
-- **Instructions (Petunjuk)**: Game rules and how to play
-- **Developer Profile (Profil Pengembang)**: Game credits
-- **Gameplay**: Interactive game with coin collection and upgrades
-- **Game Urgency**: Special challenges from NPCs
-
-## How to Play
-
-1. Open `index.html` in a web browser
-2. Click "MULAI" to start the game
-3. Interact with characters and collect coins
-4. Upgrade your character with collected coins
-5. Complete missions and challenges
-
-## Project Structure
-
-- `index.html` - Main game file with all HTML, CSS, and JavaScript
-- `README.md` - Project documentation
-
-## Technical Stack
-
-- HTML5 Canvas API for graphics rendering
-- Vanilla JavaScript for game logic
-- CSS3 for UI styling
-- No external dependencies required
-
-## Game Mechanics
-
-### Coins System
-- Collect coins by completing tasks
-- Use coins to upgrade character abilities
-- Track your score and progress
-
-### Character Upgrades
-- Ceper/Tamas (Base materials)
-- Geser & Lepas (Advanced materials)
-- Pastikan Posisi (Position upgrades)
-
-### Educational Content
-- Learn about Balinese offerings
-- Understand cultural traditions
-- Interactive learning through gameplay
-
-## Browser Support
-
-Works on all modern browsers supporting HTML5 Canvas:
-- Chrome/Edge 90+
-- Firefox 88+
-- Safari 14+
-- Mobile browsers (iOS Safari, Chrome Mobile)
-
-## Future Enhancements
-
-- Sound and background music
-- Animated sprites
-- Multiplayer features
-- More game levels
-- Leaderboard system
-- Asset loading from external files
+<p align="center">
+  <a href="https://github.com/antono4/bantara-game"><img alt="GitHub repo" src="https://img.shields.io/badge/GitHub-antono4/bantara-game-blue?logo=github"></a>
+  <a href="https://antono4.github.io/bantara-game/"><img alt="Live Demo" src="https://img.shields.io/badge/Live%20Demo-Online-success?logo=githubpages"></a>
+  <img alt="Files" src="https://img.shields.io/badge/Files-11-informational">
+  <img alt="Updated" src="https://img.shields.io/badge/Updated-2026-08-30 13:54:19 WIB-lightgrey">
+</p>
 
 ---
 
-Created as an educational game prototype about Balinese culture.
+## 📖 Tentang
+
+Repository **`bantara-game`** adalah situs web pribadi / portofolio yang diterbitkan melalui **GitHub Pages**. Situs utama berada di [`https://antono4.github.io/bantara-game/`](https://antono4.github.io/bantara-game/).
+
+## 🗂️ Struktur Proyek
+
+```
+bantara-game/
+├── index.html          # Halaman utama (landing / portofolio)
+├── assets/             # Aset statis (css, js, img, vendor)
+├── forms/               # Form handler (PHP)
+```
+
+## 🛠️ Teknologi
+
+Berdasarkan isi repository, proyek ini menggunakan:
+
+- `HTML`
+
+> Total **11 file** terdeteksi di repository.
+
+## 🚀 Menjalankan Secara Lokal
+
+Karena ini situs statis (HTML/CSS/JS/PHP), cukup buka `index.html` di browser, atau jalankan server lokal:
+
+```bash
+# Tanpa dependency
+python3 -m http.server 8000
+# lalu buka http://localhost:8000
+
+# atau dengan PHP (untuk form handler di forms/)
+php -S localhost:8000
+```
+
+## 📬 Kontak
+
+- GitHub: [antono4](https://github.com/antono4)
+- Situs: [https://antono4.github.io/bantara-game/](https://antono4.github.io/bantara-game/)
+
+## 📄 Lisensi
+
+Lihat berkas [`LICENSE`](./LICENSE) untuk informasi lisensi.
+
+---
+
+<sub>README ini di-generate otomatis pada **2026-08-30 13:54:19 WIB** oleh GitHub Actions .</sub>
