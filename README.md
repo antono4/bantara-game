@@ -1,2 +1,26 @@
-Last updated: 2026-09-08 13:15:54 WIB
-Last updated: 2026-09-08 13:21:11 WIB
+# bantara-game
+
+
+
+## 📋 Overview
+
+This repository contains **11 files** and is built with the following technologies:
+
+HTML
+
+## 🚀 Quick Start
+
+## ✨ Features
+
+- 📝 Auto-generated documentation
+
+## 🛠️ Technologies
+
+HTML
+
+## 📄 License
+
+MIT License
+
+---
+*Last updated: 2026-09-08 16:50:33 WIB*
